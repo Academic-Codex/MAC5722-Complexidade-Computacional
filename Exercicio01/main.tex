@@ -1,0 +1,463 @@
+\documentclass[a4paper]{article}
+\usepackage{student}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[version=4]{mhchem}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, decorations.pathreplacing}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\pagestyle{plain}
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% Definindo o estilo de destaque com linhas pontilhadas
+\tikzstyle{highlight} = [draw, dashed, thick, rectangle, rounded corners, inner sep=0.2cm, orange]
+
+
+\tikzstyle{startstop} = [
+    rectangle, rounded corners, minimum width=0.5cm,
+    text centered, draw=black, fill=blue!10, font=\small
+]
+\tikzstyle{startstop_S} = [
+    rectangle, rounded corners, minimum width=0.5cm, minimum height=0.8cm,
+    text centered, draw=black, fill=green!30, font=\small
+]
+\tikzstyle{decision} = [
+    diamond, aspect=2, draw=black, fill=orange!15, align=center,
+    text centered, inner sep=0pt, font=\small
+]
+\tikzstyle{decision_S} = [
+    diamond, aspect=2, draw=black, fill=orange!30, align=center,
+    text centered, inner sep=0pt, font=\small
+]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+
+
+% Metadata
+\date{\today}
+\setmodule{MAC5722/IME: Complexidade Computacional. \\ Prof.: Benjamin Merlin Bumpus} 
+\setterm{2o. semestre, 2025}
+
+%-------------------------------%
+% Other details
+% TODO: Fill these
+%-------------------------------%
+\title{Exercício 01 - 17/08}
+\setmembername{Nara Avila Moraes}  % Fill group member names
+\setmemberuid{5716734}  % Fill group member uids (same order)
+
+%-------------------------------%
+% Add / Delete commands and packages
+% TODO: Add / Delete here as you need
+%-------------------------------%
+\usepackage{amsmath,amssymb,bm}
+
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\T}{\top}
+
+\newcommand{\expdist}[2]{%
+        \normalfont{\textsc{Exp}}(#1, #2)%
+    }
+\newcommand{\expparam}{\bm \lambda}
+\newcommand{\Expparam}{\bm \Lambda}
+\newcommand{\natparam}{\bm \eta}
+\newcommand{\Natparam}{\bm H}
+\newcommand{\sufstat}{\bm u}
+
+% Main document
+\begin{document}
+    % Add header
+    \header{}
+
+\textbf{Questão 1.} Arora, Barak - Capítulo 01:
+\begin{center}
+\begin{itemize}
+  \item[(1.1)] Seja $f$ a função de \textit{adição} que mapeia a representação de um par de números $x, y$ para a representação do número $x + y$. Seja $g$ a função de \textit{multiplicação} que mapeia $(x,y)$ para $\lfloor x \cdot y \rfloor$. Prove que tanto $f$ quanto $g$ são computáveis, escrevendo uma descrição completa (incluindo os estados, o alfabeto e a função de transição) das máquinas de Turing correspondentes.
+  \item[(1.7)] Defina uma \textit{máquina de Turing bidimensional} como uma TM onde cada uma de suas fitas é uma grade infinita (e a máquina pode se mover não apenas para a Esquerda e Direita, mas também para Cima e para Baixo). Mostre que para toda função (tempo-construível) $T: \mathbb{N} \to \mathbb{N}$ e toda função Booleana $f$, se $g$ pode ser computada em tempo $T(n)$ usando uma TM bidimensional, então $f \in \textbf{DTIME}(T(n)^2)$.
+  \item[(1.14)] Prove que as seguintes linguagens/problemas de decisão em grafos estão em $\mathbf{P}$. (Você pode escolher a representação por matriz de adjacência ou lista de adjacência para os grafos; isso não fará diferença. Consegue ver por quê?)
+
+    \begin{enumerate}
+        \item[(a)] \textbf{CONNECTED}—O conjunto de todos os grafos conexos. Ou seja, $G \in \textbf{CONNECTED}$ se todo par de vértices $u, v$ em $G$ está conectado por um caminho.
+        \item[(b)] \textbf{TRIANGLEFREE}—O conjunto de todos os grafos que não contêm um triângulo (i.e., uma tripla $u, v, w$ de vértices distintos e conectados).
+        \item[(c)] \textbf{BIPARTITE}—O conjunto de todos os grafos bipartidos. Ou seja, $G \in \textbf{BIPARTITE}$ se os vértices de $G$ podem ser particionados em dois conjuntos $A, B$ tal que todas as arestas em $G$ são de um vértice em $A$ para um vértice em $B$ (não há aresta entre dois membros de $A$ ou dois membros de $B$).
+        \item[(d)] \textbf{TREE}—O conjunto de todas as árvores. Um grafo $G$ é uma \textit{árvore} se for conexo e não contiver ciclos. Equivalentemente, um grafo $G$ é uma árvore se todo par de vértices distintos $u, v$ em $G$ estiver conectado por exatamente um caminho simples (um caminho é simples se não tiver vértices repetidos).
+    \end{enumerate}
+\end{itemize}
+\end{center}
+\textbf{Questão 2.} Arora, Barak - Capítulo 01:
+\begin{center}
+\begin{itemize}
+  \item[(2)] Descreva a prova do Teorema 1.9 em Arora, Barak em \textit{suas próprias palavras}. Explique a intuição e dê detalhes da prova. Os pontos serão atribuídos com base na capacidade de mostrar que o conteúdo foi compreendido.
+\end{itemize}
+\end{center}
+
+    \begin{answer}[Ítem 1.1]
+
+Seja a descrição da Máquina de Turim de Adição e Multiplicação sua prova construtiva, seguem a descrição formal de tais máquinas, na qual a descrição das transições da máquina de multiplicação foi apresentada de forma simplificada, para evidenciar a clareza do algoritmo em vez da complexidade:
+
+\subsection*{Máquina de Turing para Adição: $f(x, y) = x + y$}
+
+O objetivo é transformar uma fita inicial contendo $1^x01^y$ em uma fita final contendo $1^{x+y}$. O algoritmo é:  \\
+1. Encontrar o separador `0` e mudá-lo para `1`. \\ 2. Voltar ao início da fita. \\ 3. Apagar o primeiro `1`. \\ 4. Ir para o estado halt.
+
+\begin{itemize}
+    \item \textbf{Alfabeto da Fita ($\Gamma$):} $\{1, 0, B\}$, onde $B$ é o símbolo de branco.
+    \item \textbf{Estados ($Q$):} $\{q_0, q_1, q_2, q_3, q_{halt}\}$
+    \begin{itemize}
+        \item $q_0$: Estado inicial. Procura o separador `0`, movendo para a direita.
+        \item $q_1$: `0` encontrado e substituído. Move para a esquerda em direção ao início da fita.
+        \item $q_2$: Início da fita encontrado. Move um passo para a direita para apagar o primeiro `1`.
+        \item $q_3$: Primeiro `1` apagado. Entra no estado de parada.
+        \item $q_{halt}$: Estado final/de parada.
+    \end{itemize}
+\end{itemize}
+
+A função $\delta: Q \times \Gamma \to Q \times \Gamma \times \{E, D\}$ é definida como:
+\begin{itemize}
+    \item \textbf{Estado $q_0$ (Procurar `0`):}
+        \item $\delta(q_0, 1) = (q_0, 1, D)$
+        \item $\delta(q_0, 0) = (q_1, 1, E)$
+    
+    \item \textbf{Estado $q_1$ (Voltar ao início):}
+        \item $\delta(q_1, 1) = (q_1, 1, E)$
+        \item $\delta(q_1, B) = (q_2, B, D)$
+        
+    \item \textbf{Estado $q_2$ (Apagar primeiro `1`):}
+        \item $\delta(q_2, 1) = (q_3, B, D)$
+        \item $\delta(q_2, B) = (q_{halt}, B, D)$ \textit{(Caso de entrada x=0 e y=0)}
+        
+    \item \textbf{Estado $q_3$ (Finalização):}
+        \item $\delta(q_3, 1) = (q_{halt}, 1, D)$
+        \item $\delta(q_3, 0) = (q_{halt}, 0, D)$
+        \item $\delta(q_3, B) = (q_{halt}, B, D)$
+\end{itemize}
+
+\subsection*{Máquina de Turing para Multiplicação}
+
+O objetivo é transformar uma fita inicial contendo $1^x01^y$ em uma fita final contendo $1^{xy}$. O algoritmo é: 
+
+1. Para cada `1` no bloco de `x`:\\
+ \textbf(a.) Marcar o `1` com um `X`.\\
+ \textbf(b.) Executar uma sub-rotina para copiar todo o bloco de `y` para a área de resultado no final da fita.\\
+2. Quando o loop principal terminar (ao não encontrar mais `1`s para marcar no bloco `x`), iniciar a fase de limpeza.\\
+3. Percorrer a fita da direita para a esquerda, apagando a entrada original (os `X`s, o `0` e o bloco `y`), deixando apenas o bloco de resultado que foi construído.\\
+4. Posicionar a cabeça de leitura no início do resultado. \\
+5. Ir para o estado halt.
+
+\begin{itemize}
+    \item \textbf{Alfabeto da Fita ($\Gamma$):} $\{1, 0, B, X, Y\}$, onde $X$ e $Y$ são marcadores.
+    
+    \item \textbf{Estados ($Q$):} $\{q_0, q_1, q_2, q_3, q_4, q_5, q_6, q_7, q_8, q_{halt}\}$
+    \begin{itemize}
+        \item $q_0$: \textbf{Início do laço principal.} Procura o próximo `1` no bloco \textbf{x} para processar.
+        \item $q_1$: Marca um `1` de \textbf{x} com `X` e move para o início do bloco \textbf{y}.
+        \item $q_2$: \textbf{Início do laço interno.} Procura o próximo `1` no bloco \textbf{y} para copiar.
+        \item $q_3$: Marca um `1` de \textbf{y} com `Y` e move para a direita para a área de resultado.
+        \item $q_4$: Escreve um `1` no final da fita e inicia o retorno.
+        \item $q_5$: Retorna para a esquerda, procurando o marcador `Y`.
+        \item $q_6$: Marcador `Y` encontrado. Continua o laço interno para copiar o resto de \textbf{y}.
+        \item $q_7$: Fim do laço interno (todo o bloco \textbf{y} foi copiado). Restaura os `Y` para `1`.
+        \item $q_8$: \textbf{Limpeza final.} Apaga a entrada original ($x$, $y$ e os marcadores).
+        \item $q_{halt}$: Estado final/de parada.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Função de Transição ($\delta$)}
+A função $\delta: Q \times \Gamma \to Q \times \Gamma \times \{E, D\}$ é definida pelas seguintes transições principais:
+
+\begin{itemize}
+    \item \textbf{Estado $q_0$ (Laço Principal - Procurar `1` em `x`):}
+        \item $\delta(q_0, 1) = (q_1, X, D)$ \textit{(Encontrou um `1` em x, marca com `X` e inicia a cópia de y)}
+        \item $\delta(q_0, X) = (q_0, X, D)$ \textit{(Pula `1`s já processados)}
+        \item $\delta(q_0, 0) = (q_8, B, E)$ \textit{(Não há mais `1`s em x, vai para a limpeza da fita)}
+
+    \item \textbf{Estado $q_1$ (Mover para o início de `y`):}
+        \item $\delta(q_1, 1) = (q_1, 1, D)$
+        \item $\delta(q_1, X) = (q_1, X, D)$
+        \item $\delta(q_1, 0) = (q_2, 0, D)$ \textit{(Chegou em y, inicia a cópia)}
+
+    \item \textbf{Estado $q_2$ (Laço Interno - Procurar `1` em `y`):}
+        \item $\delta(q_2, 1) = (q_3, Y, D)$ \textit{(Marca `1` de y com `Y` e vai para o resultado)}
+        \item $\delta(q_2, Y) = (q_2, Y, D)$
+        \item $\delta(q_2, 0) = (q_2, 0, D)$ \textit{(Atravessa o separador do resultado)}
+        \item $\delta(q_2, B) = (q_7, B, E)$ \textit{(Fim de y, a cópia está completa)}
+
+    \item \textbf{Estado $q_3$ (Mover para o fim da fita):}
+        \item $\delta(q_3, 1) = (q_3, 1, D)$
+        \item $\delta(q_3, Y) = (q_3, Y, D)$
+        \item $\delta(q_3, 0) = (q_3, 0, D)$
+        \item $\delta(q_3, B) = (q_4, 1, E)$ \textit{(Escreve `1` no resultado)}
+        
+    \item \textbf{Estado $q_4$ (Retornar para o marcador `Y`):}
+        \item $\delta(q_4, 1) = (q_4, 1, E)$
+        \item $\delta(q_4, 0) = (q_4, 0, E)$
+        \item $\delta(q_4, Y) = (q_5, Y, E)$ \textit{(Encontrou `Y`, continua o retorno)}
+    
+    \item \textbf{Estado $q_5$ (Posicionar para continuar cópia de `y`):}
+        \item $\delta(q_5, 1) = (q_5, 1, E)$
+        \item $\delta(q_5, 0) = (q_6, 0, D)$ \textit{(Retornou ao início de y)}
+
+    \item \textbf{Estado $q_6$ (Restaurar `Y` e continuar laço interno):}
+        \item $\delta(q_6, Y) = (q_2, 1, D)$ \textit{(Restaura `Y` para `1` e procura o próximo `1` em y)}
+
+    \item \textbf{Estado $q_7$ (Restaurar `y` e voltar para `x`):}
+        \item $\delta(q_7, 1) = (q_7, 1, E)$
+        \item $\delta(q_7, Y) = (q_7, 1, E)$ \textit{(Restaura todos os `Y` para `1`)}
+        \item $\delta(q_7, 0) = (q_7, 0, E)$
+        \item $\delta(q_7, X) = (q_0, X, D)$ \textit{(Retorna ao laço principal para processar o próximo `1` de x)}
+
+    \item \textbf{Estado $q_8$ (Limpeza Final):}
+        \item $\delta(q_8, 1) = (q_8, B, E)$
+        \item $\delta(q_8, X) = (q_8, B, E)$
+        \item $\delta(q_8, 0) = (q_8, B, E)$
+        \item $\delta(q_8, B) = (q_{halt}, B, D)$ \textit{(A máquina pára posicionada no início do resultado)}
+
+\end{itemize}
+
+    \end{answer}
+    
+    \begin{answer}[Ítem 1.7]
+
+O objetivo é provar que qualquer função computável em tempo $T(n)$ por uma Máquina de Turing bidimensional (2D-TM) pode ser computada em tempo $O(T(n)^2)$ por uma Máquina de Turing padrão (com fita linear de 1 dimensão). Isso demonstrará que a classe de problemas resolvidos pela 2D-TM em tempo $T(n)$ está contida em $\text{DTIME}(T(n)^2)$.
+
+A prova é construtiva: descreveremos como uma TM padrão (usando múltiplas fitas para facilitar, o que é sabidamente equivalente em poder a uma TM de fita única com sobrecarga polinomial) pode simular uma 2D-TM.
+
+\subsection*{Passo 1: Representando a Fita 2D em uma Fita 1D}
+
+O desafio inicial é mapear a grade infinita bidimensional para uma fita linear. A observação fundamental é que, em $T(n)$ passos, a 2D-TM só consegue visitar células $(x, y)$ que estão a uma distância Manhattan máxima de $T(n)$ da origem $(0,0)$. Todo o cômputo ocorre, portanto, dentro de um quadrado de dimensões $(2T(n)+1) \times (2T(n)+1)$.
+
+Para mapear eficientemente essa área finita da grade, utilizaremos um \textbf{mapeamento em serpentina (ou zigue-zague)}. As linhas da grade são armazenadas sequencialmente na fita 1D, mas com direções alternadas para otimizar a adjacência vertical.
+\begin{itemize}
+    \item Linhas com índice $y$ par são escritas da esquerda para a direita.
+    \item Linhas com índice $y$ ímpar são escritas da direita para a esquerda.
+\end{itemize}
+Usaremos um símbolo especial, como \texttt{\#}, para delimitar o início e o fim de cada linha.
+
+\paragraph{Exemplo de Layout na Fita 1D:}
+\begin{verbatim}
+... # c(-1,-1) c(-1,0) c(-1,1) # c(0,1) c(0,0) c(0,-1) # c(1,-1) c(1,0) c(1,1) # ...
+\end{verbatim}
+Onde $c(x,y)$ representa o conteúdo da célula na coordenada $(x,y)$.
+
+\subsection*{Passo 2: A Simulação}
+
+A simulação será realizada por uma TM padrão com 2 fitas:
+\begin{enumerate}
+    \item \textbf{Fita 1 (Fita de Dados):} Armazena a grade 2D usando o mapeamento em serpentina. O cabeçote desta fita sempre aponta para a célula que corresponde à posição atual do cabeçote da 2D-TM.
+    \item \textbf{Fita 2 (Fita de Posição):} Uma fita auxiliar que armazena a coordenada $y$ (o número da linha) da posição atual, para facilitar a navegação vertical.
+\end{enumerate}
+
+A simulação de um único passo da 2D-TM consiste em:
+\begin{enumerate}
+    \item \textbf{Leitura:} A TM simuladora lê o símbolo sob seu cabeçote na Fita 1.
+    \item \textbf{Decisão:} Com base no símbolo lido e no estado atual da 2D-TM (armazenado internamente), a simuladora consulta a função de transição da 2D-TM para obter o novo símbolo, o novo estado e a direção do movimento (Cima, Baixo, Esquerda, Direita).
+    \item \textbf{Escrita:} O novo símbolo é escrito na Fita 1, sobre o símbolo antigo.
+    \item \textbf{Movimento:} O cabeçote da Fita 1 é movido para simular o movimento da 2D-TM.
+\end{enumerate}
+
+
+\subsection*{Passo 3: Análise de Custo do Movimento}
+
+A complexidade da simulação de um passo é dominada pelo custo do movimento.
+\begin{itemize}
+    \item \textbf{Movimento para Esquerda/Direita:} Um movimento horizontal na grade 2D corresponde, na maioria dos casos, a um movimento de uma única célula na Fita 1, devido ao mapeamento em serpentina. O custo é, portanto, $O(1)$.
+    
+    \item \textbf{Movimento para Cima/Baixo:} Este é o caso mais custoso. Para mover de $(x,y)$ para $(x, y+1)$ (Cima), o cabeçote da Fita 1 deve saltar do bloco da linha $y$ para o bloco da linha $y+1$. Isso exige que a TM simuladora:
+    \begin{enumerate}
+        \item Percorra a linha atual até encontrar o marcador \texttt{\#}.
+        \item Percorra a próxima linha até encontrar a célula na coluna correspondente.
+    \end{enumerate}
+    Como a 2D-TM executa $T(n)$ passos, a dimensão máxima de qualquer linha é $2T(n)+1$. A distância a ser percorrida na Fita 1 é, portanto, proporcional ao comprimento de uma linha. O custo de um movimento vertical é $O(T(n))$.
+\end{itemize}
+
+\subsection*{Passo 4: Custo Total da Simulação}
+O custo para simular cada passo da 2D-TM é limitado pelo movimento mais caro, o vertical.
+\begin{itemize}
+    \item Custo para simular 1 passo da 2D-TM: $O(T(n))$.
+    \item Número total de passos a simular: $T(n)$.
+\end{itemize}
+O tempo total de simulação na TM padrão é o produto desses dois fatores:
+\[
+T_{\text{sim}}(n) = (\text{Número de passos da 2D-TM}) \times (\text{Custo máximo por passo})
+\]
+\[
+T_{\text{sim}}(n) = T(n) \times O(T(n)) = O(T(n)^2)
+\]
+
+\subsection*{Conclusão}
+
+Demonstramos que uma 2D-TM operando em tempo $T(n)$ pode ser simulada por uma TM padrão em tempo $O(T(n)^2)$. Consequentemente, qualquer função $f$ computável nesse regime pela 2D-TM pertence à classe de complexidade de tempo determinístico $\text{DTIME}(T(n)^2)$. A premissa de que $T(n)$ é uma função tempo-construível é necessária formalmente para que a TM simuladora possa, por exemplo, delimitar o espaço de fita necessário ou utilizar um "relógio" para controlar o tempo de simulação.
+
+    \end{answer}
+
+    \begin{answer}[Ítem 1.14]
+
+\textbf{Prova de que Problemas de Grafos Pertencem à Classe P}
+
+A classe \textbf{P} contém todos os problemas de decisão que podem ser resolvidos por uma máquina de Turing determinística em tempo polinomial em relação ao tamanho da entrada. Para provar que um problema está em \textbf{P}, basta apresentar um algoritmo que o resolva em tempo polinomial.
+
+Nos casos a seguir, vamos considerar um grafo $G = (V, E)$ com $n = |V|$ vértices e $m = |E|$ arestas.
+
+\subsection*{a) CONNECTED}
+\subsection*{Problema}
+Determinar se um grafo $G$ é conexo. Um grafo é conexo se para todo par de vértices $u, v \in V$, existe um caminho entre $u$ e $v$.
+
+\subsection*{Prova}
+Podemos determinar se um grafo é conexo usando um algoritmo de busca em largura (BFS) ou busca em profundidade (DFS).
+
+\subsection*{Algoritmo}
+\begin{enumerate}
+    \item Escolha um vértice inicial arbitrário $s \in V$.
+    \item Inicie uma busca (BFS ou DFS) a partir de $s$.
+    \item Mantenha um contador de vértices visitados.
+    \item Após a busca terminar, verifique se o número de vértices visitados é igual a $n$ (o número total de vértices no grafo).
+    \item Se todos os $n$ vértices foram visitados, o grafo é conexo. Caso contrário, não é.
+\end{enumerate}
+
+\subsection*{Análise de Complexidade}
+Tanto a busca em largura (BFS) quanto a busca em profundidade (DFS) têm uma complexidade de tempo de $O(n + m)$ quando o grafo é representado por uma lista de adjacência. Se for usada uma matriz de adjacência, a complexidade é $O(n^2)$. Ambos os tempos, $O(n+m)$ e $O(n^2)$, são polinomiais em relação ao tamanho da entrada.
+
+Portanto, \textbf{CONNECTED $\in$ P}.
+
+\subsection*{b) TRIANGLEFREE}
+\subsection*{Problema}
+Determinar se um grafo $G$ não contém um triângulo. Um triângulo é um conjunto de três vértices distintos $\{u, v, w\}$ tal que todos são mutuamente adjacentes.
+
+\subsection*{Prova}
+Podemos verificar a ausência de triângulos iterando por todas as combinações possíveis de três vértices.
+
+\subsection*{Algoritmo}
+\begin{enumerate}
+    \item Itere por todos os trios de vértices distintos $\{u, v, w\}$ do grafo.
+    \item Para cada trio, verifique se as arestas $(u, v)$, $(v, w)$ e $(u, w)$ existem em $G$.
+    \item Se tal trio for encontrado, o grafo contém um triângulo, então ele \textbf{não} está em TRIANGLEFREE. O algoritmo pode parar e retornar "Não".
+    \item Se o algoritmo verificar todos os trios e não encontrar nenhum triângulo, o grafo está em TRIANGLEFREE. O algoritmo retorna "Sim".
+\end{enumerate}
+
+\subsection*{Análise de Complexidade}
+O número de trios de vértices distintos em um grafo com $n$ vértices é $\binom{n}{3} = \frac{n(n-1)(n-2)}{6}$, que é $O(n^3)$. Para cada trio, a verificação da existência das três arestas leva um tempo constante, $O(1)$, se o grafo for representado por uma matriz de adjacência. Portanto, a complexidade total do algoritmo é $O(n^3)$.
+
+Como $O(n^3)$ é um tempo polinomial, \textbf{TRIANGLEFREE $\in$ P}.
+
+\subsection*{c) BIPARTITE}
+\subsection*{Problema}
+Determinar se um grafo $G$ é bipartido. Um grafo é bipartido se seus vértices podem ser divididos em dois conjuntos disjuntos, $A$ e $B$, tal que toda aresta conecta um vértice em $A$ a um vértice em $B$.
+
+\subsection*{Prova}
+Um grafo é bipartido se, e somente se, ele não contém ciclos de comprimento ímpar. Podemos verificar isso usando um algoritmo de coloração com duas cores, geralmente implementado com uma busca em largura (BFS).
+
+\subsection*{Algoritmo}
+\begin{enumerate}
+    \item Inicialize um array de cores \texttt{cor[1...n]} com um valor nulo (e.g., 0) para todos os vértices.
+    \item Para cada vértice $v \in V$:
+    \begin{enumerate}
+        \item Se \texttt{cor[v]} ainda for nulo, inicie uma BFS a partir de $v$:
+        \item Pinte $v$ com a primeira cor (e.g., 1) e coloque-o em uma fila.
+        \item Enquanto a fila não estiver vazia, retire um vértice $u$.
+        \item Para cada vizinho $w$ de $u$:
+        \begin{enumerate}
+            \item Se $w$ não estiver colorido (\texttt{cor[w]} é nulo), pinte-o com a cor oposta a $u$ e adicione-o à fila.
+            \item Se $w$ já estiver colorido e tiver a mesma cor que $u$, o grafo contém um ciclo ímpar e, portanto, não é bipartido. O algoritmo pode parar e retornar "Não".
+        \end{enumerate}
+    \end{enumerate}
+    \item Se a busca terminar para todos os componentes do grafo sem encontrar conflitos de cor, o grafo é bipartido. Retorne "Sim".
+\end{enumerate}
+
+\subsection*{Análise de Complexidade}
+Este algoritmo visita cada vértice e cada aresta no máximo uma vez, assim como uma BFS padrão. Sua complexidade de tempo é $O(n + m)$ com uma lista de adjacência, que é polinomial.
+
+Portanto, \textbf{BIPARTITE $\in$ P}.
+
+\subsection*{d) TREE}
+\subsection*{Problema}
+Determinar se um grafo $G$ é uma árvore. Uma árvore é um grafo conexo e acíclico.
+
+\subsection*{Prova}
+Um grafo com $n$ vértices é uma árvore se, e somente se, ele satisfaz duas das três seguintes propriedades:
+\begin{enumerate}
+    \item[i.] O grafo é conexo.
+    \item[ii.] O grafo não contém ciclos (é acíclico).
+    \item[iii.] O grafo tem exatamente $n-1$ arestas.
+\end{enumerate}
+Podemos criar um algoritmo eficiente verificando as propriedades (i) e (iii).
+
+\subsection*{Algoritmo}
+\begin{enumerate}
+    \item Conte o número de vértices ($n$) e o número de arestas ($m$) no grafo.
+    \item Verifique se $m = n-1$. Se não for, o grafo não é uma árvore. Retorne "Não".
+    \item Se $m = n-1$, verifique se o grafo é conexo usando o algoritmo da parte (a) (BFS ou DFS).
+    \item Se o grafo for conexo e tiver $n-1$ arestas, ele é uma árvore. Retorne "Sim". Caso contrário, retorne "Não".
+\end{enumerate}
+
+\subsection*{Análise de Complexidade}
+\begin{enumerate}
+    \item Contar vértices e arestas pode ser feito em $O(n+m)$ com uma lista de adjacência.
+    \item A verificação da condição $m = n-1$ é $O(1)$.
+    \item Verificar a conectividade, como vimos, leva $O(n+m)$ tempo.
+\end{enumerate}
+A complexidade total é dominada pela contagem e pela verificação de conectividade, resultando em $O(n+m)$. Este tempo é polinomial.
+
+Portanto, \textbf{TREE $\in$ P}.
+
+    \end{answer}
+
+    \begin{answer}[Ítem 2]
+
+O \textbf{Teorema 1.9} afirma a existência de uma Máquina de Turing Universal ($U$) que pode simular qualquer outra Máquina de Turing $M_\alpha$ de forma eficiente. Especificamente, se $M_\alpha$ para em $T$ passos numa entrada $x$, a simulação $U(x, \alpha)$ para em $O(T \log T)$ passos. A seguir, descreve-se a prova dessa afirmação, focando na intuição e nos detalhes técnicos.
+
+\subsection*{Desafio}
+
+A principal dificuldade em construir uma UTM eficiente reside em simular uma máquina $M$ com múltiplas fitas de trabalho ($k$ fitas), cujos cabeçotes se movem de forma independente, usando uma UTM $U$ com apenas uma fita de trabalho.
+
+A intuição central da prova é uma inversão de perspectiva: \textit{“Se o cabeçote não pode ir até a célula desejada, a célula virá até o cabeçote.”} Em vez de mover o cabeçote de $U$ por longas distâncias, ele permanece fixo na posição 0, e o conteúdo da fita é deslocado para debaixo dele.
+
+Uma abordagem ingênua seria, a cada passo de $M$, deslocar todos os símbolos em uma das $k$ pistas paralelas da fita de $U$ para simular o movimento do cabeçote correspondente. No entanto, como a fita pode ter até $O(T)$ símbolos, cada passo da simulação custaria $O(T)$, levando a um tempo total ineficiente de $O(T^2)$. A prova supera esse obstáculo com uma estrutura de dados engenhosa e uma análise de custo amortizado.
+
+\subsection*{A Estrutura de Dados: Fitas com Zonas}
+
+Para otimizar a operação de deslocamento (shift), cada uma das $k$ pistas paralelas na fita de trabalho de $U$ é organizada em \textbf{zonas} de tamanhos exponencialmente crescentes, dispostas simetricamente ao redor da posição 0 do cabeçote.
+
+\begin{itemize}
+    \item Para cada $i \ge 0$, existem duas zonas: $L_i$ (à esquerda) e $R_i$ (à direita).
+    \item O tamanho (número de células) de $L_i$ e $R_i$ é $2^i$. Assim, temos $L_0, R_0$ com 1 célula cada, $L_1, R_1$ com 2 células cada, $L_2, R_2$ com 4 células cada, e assim por diante.
+    \item Um símbolo especial de "buffer" (representado como $\otimes$) é usado para preencher espaços vazios, permitindo que os dados sejam gerenciados de forma mais flexível.
+\end{itemize}
+
+Essa estrutura é mantida por um conjunto de \textbf{invariantes} durante toda a computação:
+\begin{enumerate}
+    \item Cada zona ($L_i$ ou $R_i$) está em um de três estados: \textbf{vazia}, \textbf{meio-cheia} ou \textbf{cheia} de símbolos que não são de buffer.
+    \item A união de um par de zonas simétricas, $L_i \cup R_i$, está sempre em um de três estados: ou ambas estão vazias, ou ambas estão cheias, ou ambas estão meio-cheias.
+    \item A célula na posição 0, sob o cabeçote de $U$, sempre contém um símbolo útil (não-buffer).
+\end{enumerate}
+
+\subsection*{Operação de Deslocamento e Análise de Custo Amortizado}
+
+Quando $U$ precisa simular um movimento do cabeçote de $M$ (por exemplo, para a esquerda), ela realiza uma operação de deslocamento que move todo o conteúdo da pista relevante uma posição para a direita, trazendo a célula desejada para a posição 0. A eficiência vem de como essa operação é implementada com a estrutura de zonas.
+
+O processo funciona como um sistema de "transbordamento" em cascata. Se um símbolo precisa ser movido para a zona $L_0$ e esta já está cheia, seu conteúdo é "empurrado" para a zona $L_1$. Se $L_1$ também estiver cheia, o processo continua para $L_2$, e assim por diante, até encontrar uma zona que não esteja cheia. A operação que afeta zonas até o índice $i_0$ tem um custo proporcional ao tamanho total dessas zonas, que é $O(\sum_{j=0}^{i_0} 2^j) = O(2^{i_0})$.
+
+A chave para a eficiência está na \textbf{análise amortizada}:
+\begin{itemize}
+    \item Uma operação de deslocamento \textbf{cara}, com custo $O(2^i)$, só ocorre quando todas as zonas $L_0, \dots, L_{i-1}$ (ou $R_0, \dots, R_{i-1}$) estão cheias.
+    \item Imediatamente após essa operação cara, essas zonas $L_0, \dots, L_{i-1}$ ficam meio-cheias.
+    \item Para que elas fiquem cheias novamente e permitam a ocorrência de outra operação de custo $O(2^i)$, é necessário que um total de $\sum_{j=0}^{i-1} 2^j = 2^i - 1$ símbolos sejam movidos para elas por meio de operações mais baratas (de índice $< i$).
+\end{itemize}
+Isso significa que cada operação cara é "paga" por um grande número de operações baratas que a precedem. Embora um único passo da simulação possa ser caro, o custo \textit{médio} (amortizado) por passo é baixo.
+
+\subsection*{Conclusão da Prova}
+
+A análise matemática formaliza essa intuição. O número de vezes que uma operação de deslocamento de índice $i$ ocorre durante os $T$ passos da simulação é no máximo $T / 2^{i-1}$. O custo total de todas as operações de índice $i$ é, portanto, $(T / 2^{i-1}) \times O(2^i) = O(T)$.
+
+Como o número máximo de zonas necessárias é tal que a soma de seus tamanhos cubra todos os $T$ possíveis símbolos, o índice máximo $i$ é da ordem de $\log T$. Somando os custos para todos os níveis de índice $i$ de 1 a $\log T$, o trabalho total para simular os $T$ passos de $M$ em uma de suas fitas é:
+$$ \sum_{i=1}^{\log T} O(T) = O(T \log T) $$
+Considerando todas as $k$ fitas, o custo total da simulação é $O(k \cdot T \log T)$. Como $k$ é uma constante que depende apenas da máquina $M_\alpha$ sendo simulada (e não da entrada $x$ ou do tempo $T$), ele é absorvido pela notação $O$, provando que a simulação é concluída em $O(T \log T)$ passos.
+
+
+    \end{answer}
+
+\end{document}

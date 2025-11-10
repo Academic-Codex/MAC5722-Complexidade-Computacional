@@ -1,0 +1,258 @@
+\documentclass[a4paper]{article}
+\usepackage{student}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[version=4]{mhchem}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, decorations.pathreplacing}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\pagestyle{plain}
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% Definindo o estilo de destaque com linhas pontilhadas
+\tikzstyle{highlight} = [draw, dashed, thick, rectangle, rounded corners, inner sep=0.2cm, orange]
+
+
+\tikzstyle{startstop} = [
+    rectangle, rounded corners, minimum width=0.5cm,
+    text centered, draw=black, fill=blue!10, font=\small
+]
+\tikzstyle{startstop_S} = [
+    rectangle, rounded corners, minimum width=0.5cm, minimum height=0.8cm,
+    text centered, draw=black, fill=green!30, font=\small
+]
+\tikzstyle{decision} = [
+    diamond, aspect=2, draw=black, fill=orange!15, align=center,
+    text centered, inner sep=0pt, font=\small
+]
+\tikzstyle{decision_S} = [
+    diamond, aspect=2, draw=black, fill=orange!30, align=center,
+    text centered, inner sep=0pt, font=\small
+]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+
+
+% Metadata
+\date{\today}
+\setmodule{MAC5722/IME: Complexidade Computacional. \\ Prof.: Benjamin Merlin Bumpus} 
+\setterm{2o. semestre, 2025}
+
+%-------------------------------%
+% Other details
+% TODO: Fill these
+%-------------------------------%
+\title{Exercício 02 - 31/08}
+\setmembername{Nara Avila Moraes}  % Fill group member names
+\setmemberuid{5716734}  % Fill group member uids (same order)
+
+%-------------------------------%
+% Add / Delete commands and packages
+% TODO: Add / Delete here as you need
+%-------------------------------%
+\usepackage{amsmath,amssymb,bm}
+
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\T}{\top}
+
+\newcommand{\expdist}[2]{%
+        \normalfont{\textsc{Exp}}(#1, #2)%
+    }
+\newcommand{\expparam}{\bm \lambda}
+\newcommand{\Expparam}{\bm \Lambda}
+\newcommand{\natparam}{\bm \eta}
+\newcommand{\Natparam}{\bm H}
+\newcommand{\sufstat}{\bm u}
+
+% Main document
+\begin{document}
+    % Add header
+    \header{}
+
+\textbf{Arora, Barak - Capítulo 02:}
+\begin{center}
+\begin{itemize}
+  \item[(2.10)] Suppose $L_1, L_2 \in \mathbf{NP}$. Then is $L_1 \cup L_2$ in $\mathbf{NP}$? What about $L_1 \cap L_2$?
+  \item[(2.18)] Prove that the language \textsc{hampath} of \textit{undirected} graphs with Hamiltonian paths is \textbf{NP}-complete. Prove that the language \textsc{tsp} described in Example 2.3 is \textbf{NP}-complete. Prove that the language \textsc{hamcycle} of \textit{undirected} graphs that contain Hamiltonian cycle (a simple cycle involving all the vertices) is \textbf{NP}-complete.
+  \item[(2.21)] Prove that \textsc{3col} (see Exercise 2.2) is \textbf{NP}-complete.
+\end{itemize}
+\end{center}
+
+    \begin{answer}[Ítem 2.10]
+
+Este exercício trabalha as propriedades de fechamento da classe $\mathbf{NP}$. Após demonstrar os ítens pedidos, podemos concluir que a classe $\mathbf{NP}$ é fechada sob as operações de união e interseção.
+
+Vamos desenvolver a prova para cada um dos casos utilizando a definição formal de $\mathbf{NP}$: uma linguagem $L$ está em $\mathbf{NP}$ se existe um \textit{verificador} de tempo polinomial $M$ que, para uma entrada $x \in L$, pode verificar uma prova (ou certificado) $u$ \textbf{de tamanho polinomial} em tempo polinomial.
+
+\subsection*{União ($L_1 \cup L_2$):}
+
+Para demonstrar que se $L_1 \in \mathbf{NP}$ e $L_2 \in \mathbf{NP}$, então $L_1 \cup L_2 \in \mathbf{NP}$, precisamos construir um verificador de tempo polinomial, que chamaremos de $M_{\text{uniao}}$, para a linguagem $L_{\text{uniao}} = L_1 \cup L_2$.
+
+\subsubsection*{Hipóteses}
+Como $L_1$ e $L_2$ estão em $\mathbf{NP}$, sabemos que:
+\begin{enumerate}
+    \item Existe um verificador $M_1$ e um polinômio $p_1$ tais que para qualquer entrada $x$:
+    $$x \in L_1 \iff \exists u_1 \text{ com } |u_1| \le p_1(|x|) \text{ tal que } M_1(x, u_1) \text{ aceita.}$$
+    
+    \item Existe um verificador $M_2$ e um polinômio $p_2$ tais que para qualquer entrada $x$:
+    $$x \in L_2 \iff \exists u_2 \text{ com } |u_2| \le p_2(|x|) \text{ tal que } M_2(x, u_2) \text{ aceita.}$$
+\end{enumerate}
+
+\subsubsection*{Construção do Novo Verificador ($M_{\text{uniao}}$)}
+Para uma entrada $x$ estar na união, ela precisa estar em $L_1$ \textbf{OU} em $L_2$. O novo certificado, $u_{\text{uniao}}$, precisa indicar a qual linguagem $x$ pertence e fornecer a prova correspondente.
+
+Podemos definir o novo certificado como um par $u_{\text{uniao}} = \langle b, u \rangle$, onde:
+\begin{itemize}
+    \item $b$ é um bit que indica a linguagem (e.g., $b=1$ para $L_1$, $b=2$ para $L_2$).
+    \item $u$ é o certificado original para a respectiva linguagem ($u_1$ ou $u_2$).
+\end{itemize}
+
+O algoritmo para $M_{\text{uniao}}(x, \langle b, u \rangle)$ é:
+\begin{enumerate}
+    \item Se $b=1$, execute $M_1(x, u)$. Se $M_1$ aceitar, aceite. Caso contrário, rejeite.
+    \item Se $b=2$, execute $M_2(x, u)$. Se $M_2$ aceitar, aceite. Caso contrário, rejeite.
+\end{enumerate}
+
+\subsubsection*{Verificação e Análise}
+\begin{itemize}
+    \item \textbf{Existência:} Se $x \in L_1 \cup L_2$, então $x$ está em $L_1$ ou $L_2$. Se $x \in L_1$, o certificado $\langle 1, u_1 \rangle$ existe e será aceito. Se $x \in L_2$, o certificado $\langle 2, u_2 \rangle$ existe e será aceito. Reciprocamente, se $M_{\text{uniao}}$ aceita um certificado $\langle b, u \rangle$, então $x \in L_b$, e portanto $x \in L_1 \cup L_2$.
+    \item \textbf{Eficiência:} O tamanho de $u_{\text{uniao}}$ é polinomial, pois o tamanho de $u$ é polinomial. O tempo de execução de $M_{\text{uniao}}$ é o tempo de execução de $M_1$ ou $M_2$, que são ambos polinomiais.
+\end{itemize}
+Portanto demonstramos que $L_1 \cup L_2 \in \mathbf{NP}$.
+
+\subsection*{Interseção ($L_1 \cap L_2$):}
+
+Para demonstrar que se $L_1 \in \mathbf{NP}$ e $L_2 \in \mathbf{NP}$, então $L_1 \cap L_2 \in \mathbf{NP}$ vamos aplicar uma construção análoga. Precisamos construir um verificador $M_{\text{inter}}$ para a linguagem $L_{\text{inter}} = L_1 \cap L_2$.
+
+\subsubsection*{Construção do Novo Verificador ($M_{\text{inter}}$)}
+Para uma entrada $x$ estar na interseção, ela precisa estar em $L_1$ \textbf{E} em $L_2$. Portanto, o certificado precisa conter a prova para ambas as linguagens.
+
+Podemos definimos o novo certificado $u_{\text{inter}}$ como um par dos dois certificados originais: $u_{\text{inter}} = \langle u_1, u_2 \rangle$.
+
+O algoritmo para $M_{\text{inter}}(x, \langle u_1, u_2 \rangle)$ é:
+\begin{enumerate}
+    \item Execute $M_1(x, u_1)$.
+    \item Execute $M_2(x, u_2)$.
+    \item Se \textbf{ambos} aceitarem, aceite. Caso contrário, rejeite.
+\end{enumerate}
+
+\subsection*{Verificação e Análise}
+\begin{itemize}
+    \item \textbf{Existência:} Se $x \in L_1 \cap L_2$, então $x \in L_1$ e $x \in L_2$. Logo, ambos os certificados $u_1$ e $u_2$ existem. O certificado composto $\langle u_1, u_2 \rangle$ fará com que $M_{\text{inter}}$ aceite. Reciprocamente, se $M_{\text{inter}}$ aceita $\langle u_1, u_2 \rangle$, significa que ambos $M_1$ e $M_2$ aceitaram, implicando que $x \in L_1$ e $x \in L_2$.
+    \item \textbf{Eficiência:} O tamanho de $u_{\text{inter}}$ é a soma dos tamanhos de $u_1$ e $u_2$, que continua sendo polinomial. O tempo de execução de $M_{\text{inter}}$ é a soma dos tempos de $M_1$ e $M_2$, que também é polinomial.
+\end{itemize}
+Portanto também está demonstrado que $L_1 \cap L_2 \in \mathbf{NP}$.
+    \end{answer}
+    
+    \begin{answer}[Ítem 2.18]
+
+A prova de que um problema é \textbf{NP-completo} exige a demonstração de duas propriedades fundamentais. Para cada problema, precisamos provar que:
+
+\begin{enumerate}
+    \item \textbf{O problema está em NP:} É suficiente mostrar que, dado um certificado, é possível verificar se ele é válido, em tempo polinomial.
+    \item \textbf{O problema é NP-difícil:} É necessário mostrar que o problema é pelo menos tão difícil quanto algum problema NP-completo conhecido. Para isso escolhemos um problema \textbf{NP-completo} e o transformamos através de uma \textbf{redução de tempo polinomial} no problema em questão.
+\end{enumerate}
+
+\section{\textsc{HAMCYCLE} (Ciclo Hamiltoniano)}
+
+\noindent\textbf{Problema:} Dado um grafo $G$, existe um ciclo simples que visita \textbf{todos} os vértices de $G$ exatamente uma vez?
+
+\subsection{Passo 1: \textsc{hamcycle} está em \textbf{NP}}
+
+\begin{itemize}
+    \item \textbf{Certificado:} Uma sequência de $n$ vértices, $(v_1, v_2, \dots, v_n)$.
+    \item \textbf{Verificador (em tempo polinomial):}
+    \begin{enumerate}
+        \item Verifique se a sequência contém todos os $n$ vértices do grafo, sem repetições. (Pode ser feito em tempo $O(n \log n)$ com ordenação ou $O(n)$ com uma tabela hash).
+        \item Verifique se existe uma aresta entre $v_i$ e $v_{i+1}$ para todo $i$ de 1 a $n-1$. (Leva $O(n)$ checagens na matriz ou lista de adjacência).
+        \item Verifique se existe uma aresta entre o último vértice, $v_n$, e o primeiro, $v_1$, para fechar o ciclo. (Uma checagem).
+    \end{enumerate}
+\end{itemize}
+Como a verificação é eficiente, concluímos que $\textbf{\textsc{hamcycle}} \in \textbf{NP}$.
+
+\subsection{Passo 2: \textsc{hamcycle} é \textbf{NP}-difícil (Redução de $3\text{-}\textsc{sat}$)}
+Esta é uma das reduções mais famosas e engenhosas. Mostramos que qualquer instância da fórmula 3-SAT (que sabemos ser NP-completa) pode ser convertida em um grafo $G$ tal que a fórmula é satisfatível \textbf{se, e somente se}, $G$ tiver um ciclo Hamiltoniano. A construção dos "gadgets" funciona da seguinte forma:
+\begin{itemize}
+    \item \textbf{Gadgets de Variável:} Para cada variável $x_i$, criamos uma estrutura com dois caminhos paralelos. Um ciclo Hamiltoniano que passar por este gadget é forçado a escolher um dos caminhos, o que corresponde a atribuir \texttt{TRUE} ou \texttt{FALSE} para $x_i$.
+    \item \textbf{Gadgets de Cláusula:} Para cada cláusula $C_j$, criamos um vértice.
+    \item \textbf{Conexões:} Conectamos os gadgets de variável aos de cláusula de uma forma inteligente. Se a variável $x_i$ aparece na cláusula $C_j$, conectamos o caminho "TRUE" de $x_i$ ao vértice da cláusula $C_j$. Se $\neg x_i$ aparece, conectamos o caminho "FALSE". As conexões permitem que o ciclo faça um "desvio" para visitar o vértice da cláusula somente se a atribuição de verdade escolhida para as variáveis satisfizer aquela cláusula.
+\end{itemize}
+A lógica é que um ciclo Hamiltoniano no grafo construído corresponde a uma atribuição de verdade que satisfaz todas as cláusulas. Se não houver uma atribuição satisfatível, é impossível visitar todos os vértices em um único ciclo. Como essa transformação pode ser feita em tempo polinomial, \textbf{\textsc{hamcycle} é NP-difícil}.
+
+\vspace{0.5cm}
+\noindent\textbf{Conclusão:} Como está em \textbf{NP} e é \textbf{NP}-difícil, \textbf{\textsc{hamcycle} é NP-completo}.
+
+
+\vspace{1cm}
+\section{\textsc{hampath} (Caminho Hamiltoniano)}
+
+\noindent\textbf{Problema:} Dado um grafo $G$, existe um caminho simples que visita \textbf{todos} os vértices de $G$ exatamente uma vez?
+
+\subsection{Passo 1: \textsc{hampath} está em \textbf{NP}}
+A prova é quase idêntica à de \textsc{hamcycle}. O certificado é uma sequência de vértices, e o verificador checa se todos os vértices estão presentes e se as conexões existem. A única diferença é que ele não precisa checar a aresta de volta do final para o começo. Claramente polinomial. $\textbf{\textsc{hampath}} \in \textbf{NP}$.
+
+\subsection{Passo 2: \textsc{hampath} é \textbf{NP}-difícil (Redução de \textsc{hamcycle})}
+Mostramos que se pudéssemos resolver \textsc{hampath} rapidamente, poderíamos resolver \textsc{hamcycle} rapidamente.
+\begin{itemize}
+    \item \textbf{Entrada:} Um grafo $G$ e a pergunta "G tem um ciclo Hamiltoniano?".
+    \item \textbf{Construção:} Escolha um vértice qualquer $v$ em $G$. "Quebre" $v$ em dois novos vértices, $v_{in}$ e $v_{out}$, em um novo grafo $G'$. Para cada aresta $(u, v)$ que chegava em $v$, crie uma aresta $(u, v_{in})$ em $G'$. Para cada aresta $(v, w)$ que saía de $v$, crie uma aresta $(v_{out}, w)$ em $G'$.
+    \item \textbf{A Lógica:} Um ciclo Hamiltoniano em $G$ que passava por $v$ (ex: $\dots \rightarrow u \rightarrow v \rightarrow w \rightarrow \dots$) corresponde diretamente a um caminho Hamiltoniano em $G'$ que vai de $v_{out}$ até $v_{in}$ (ex: $v_{out} \rightarrow w \rightarrow \dots \rightarrow u \rightarrow v_{in}$).
+\end{itemize}
+Portanto, $G$ tem um ciclo Hamiltoniano se, e somente se, $G'$ tem um caminho Hamiltoniano. A redução é polinomial. \textbf{\textsc{hampath} é NP-difícil}.
+
+\vspace{0.5cm}
+\noindent\textbf{Conclusão:} \textbf{\textsc{hampath} é NP-completo}.
+
+\vspace{1cm}
+\section{\textsc{tsp} (Problema do Caixeiro Viajante -- Versão de Decisão)}
+
+\noindent\textbf{Problema:} Dadas $n$ cidades, as distâncias entre elas, e um orçamento $k$, existe um tour (um ciclo) que visita todas as cidades com uma distância total $\le k$?
+
+\subsection{Passo 1: \textsc{tsp} está em \textbf{NP}}
+\begin{itemize}
+    \item \textbf{Certificado:} Uma permutação das $n$ cidades, representando a ordem do tour.
+    \item \textbf{Verificador (em tempo polinomial):}
+    \begin{enumerate}
+        \item Verifique se a permutação é válida (contém todas as cidades, uma vez cada).
+        \item Some as distâncias entre as cidades consecutivas na permutação (incluindo a volta da última para a primeira).
+        \item Verifique se a soma total é menor ou igual ao orçamento $k$.
+    \end{enumerate}
+\end{itemize}
+Como a verificação é eficiente, $\textbf{\textsc{tsp}} \in \textbf{NP}$.
+
+\subsection{Passo 2: \textsc{tsp} é \textbf{NP}-difícil (Redução de \textsc{hamcycle})}
+Mostramos que se pudéssemos resolver \textsc{tsp} rapidamente, poderíamos resolver \textsc{hamcycle} rapidamente.
+\begin{itemize}
+    \item \textbf{Entrada:} Um grafo $G=(V, E)$ e a pergunta "G tem um ciclo Hamiltoniano?".
+    \item \textbf{Construção (transformando $G$ em uma instância de \textsc{tsp}):}
+    \begin{enumerate}
+        \item \textbf{Cidades:} Crie uma cidade para cada vértice $v$ de $V$.
+        \item \textbf{Distâncias:} Para cada par de cidades $u$ e $v$:
+        \begin{itemize}
+            \item Se a aresta $\{u, v\}$ \textbf{existe} em $E$, a distância é \textbf{1}.
+            \item Se a aresta $\{u, v\}$ \textbf{não existe} em $E$, a distância é \textbf{2}.
+        \end{itemize}
+        \item \textbf{Orçamento $k$:} Defina $k = n$ (onde $n = |V|$).
+    \end{enumerate}
+    \item \textbf{A Lógica:}
+    \begin{itemize}
+        \item Se $G$ tem um ciclo Hamiltoniano, então existe um tour de $n$ cidades usando apenas arestas que estavam em $G$. Cada passo desse tour terá distância 1. O custo total será $n \times 1 = n$. Este tour satisfaz o orçamento $k=n$.
+        \item Se existe um tour de \textsc{tsp} com custo total $\le n$, então esse tour (que tem $n$ passos) deve usar apenas arestas de custo 1, pois se usasse uma única aresta de custo 2, o custo total seria $> n$. Um tour que usa apenas arestas de custo 1 corresponde diretamente a um ciclo Hamiltoniano no grafo original $G$.
+    \end{itemize}
+\end{itemize}
+A redução é polinomial. \textbf{\textsc{tsp} é NP-difícil}.
+
+\vspace{0.5cm}
+\noindent\textbf{Conclusão:} \textbf{\textsc{tsp} é NP-completo}.
+    \end{answer}
+
+    \begin{answer}[Ítem 2.21]
+
+    \end{answer}
+
+\end{document}

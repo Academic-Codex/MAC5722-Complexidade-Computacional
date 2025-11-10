@@ -1,0 +1,40 @@
+## Arquivos auxiliares de compilação LaTeX
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.run.xml
+
+## Arquivos temporários criados por pacotes
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+## Saídas compiladas
+*.dvi
+*.ps
+
+## Backups
+*~
+*.bak
+*.backup
+*.sav
+
+## Diretórios temporários de editores
+auto/
+latex.out/
+build/
+.DS_Store
