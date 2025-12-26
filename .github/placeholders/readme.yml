@@ -1,0 +1,12 @@
+REPO_TAGLINE: Computational complexity • Cook-Levin Theorem • Reducibility
+ASSETS_DIR: .github/readme
+CTA_TEXT: Access the full course website
+THEME: workload
+SITE_URL: https://academic-codex.github.io/MAC5722-Complexidade-Computacional
+
+BG_1: "#1E1B4B"
+BG_2: "#312E81"
+TEXT_MAIN: "#EEF2FF"
+TEXT_MUTED: "#C7D2FE"
+ACCENT: "#818CF8"
+CARD_RADIUS: "18"
