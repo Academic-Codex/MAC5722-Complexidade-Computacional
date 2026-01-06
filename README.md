@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://Academic-Codex.github.io/MAC5722-Complexidade-Computacional">
-    <img src=".github/readme/hero.svg?v=2026-01-06T14:33:53.238762Z" width="100%" alt="Access the course website" />
+    <img src=".github/readme/hero.svg?v=2026-01-06T15:35:42.302118Z" width="100%" alt="Access the course website" />
   </a>
 </p>
 
